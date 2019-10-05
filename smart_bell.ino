@@ -1,27 +1,25 @@
-/*
-  DS3231: Real-Time Clock.
-  Read more: www.jarzebski.pl/arduino/komponenty/zegar-czasu-rzeczywistego-rtc-DS3231.html
-  GIT: https://github.com/jarzebski/Arduino-DS3231
-  Web: http://www.jarzebski.pl
-  (c) 2014 by Korneliusz Jarzebski
-*/
-
+#include <LiquidCrystal.h>  // Лобавляем необходимую библиотеку
 #include <Wire.h>
 #include "RTClib.h"
-#define relayPin 4            // Ռելեյի պինը
+#define relayPin 8            // Ռելեյի պինը
+LiquidCrystal lcd(7, 6, 5, 4, 3, 2); // (RS, E, DB4, DB5, DB6, DB7)
+String daysOfWeek [] = {"Sun.","Mon.","Tue.","Wed.","Thu.","Fri.","Sat.",};
+String bellTime [] = {"9:00","9:45","9:50","10:35","10:40","11:25","11:35","12:20","12:25","13:10","13:15","14:00","14:05","14:50"};
+byte bellIndex = 0;
 RTC_DS3231 rtc;
 byte bell_duration = 5;
 byte  dow , hour , minute, sec;
-byte compileSecond = 9;
+byte compileSecond = 7;
 
 void setup(){
-Serial.begin(9600);               // Инициализируем вывод данных на монитор серийного порта, со скоростью 9600 бод
-pinMode(relayPin, OUTPUT); 
-rtc.begin();
- // clock.setDateTime(__DATE__, __TIME__);                  // Устанавливаем время на часах, основываясь на времени компиляции скетча
+    Serial.begin(9600);               // Инициализируем вывод данных на монитор серийного порта, со скоростью 9600 бод
+    pinMode(relayPin, OUTPUT); 
+    rtc.begin();
+  //  rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));                
 //  clock.setDateTime(2016, 9, 15, 0, 0, 0);              // Установка времени вручную (Год, Месяц, День, Час, Минута, Секунда)
 //  setAlarm1(Дата или день, Час, Минута, Секунда, Режим)
-   readTime();
+    readTime();
+    lcd.begin(16, 2);                  // Задаем размерность экрана
 }
 
 void loop(){
@@ -60,7 +58,7 @@ void calculateTime(){
 }
 
 void soundingBellTest(){   
-     if(hour == 18 && minute == 52 && sec==0){
+     if(hour == 18 && minute == 32  && sec==0){
         relayStates();
      } else if(hour == 18 && minute == 54 && sec == 0){ 
         relayStates();
@@ -121,22 +119,46 @@ void soundingBell(){
 
 void relayStates(){
    relayOn();
+   bellIndex = bellIndex + 1;
+   if(bellIndex == sizeof(bellTime)){
+      bellIndex = 0;
+   }
    delay((bell_duration * 1000));   //թիվը վերածում է վրկ․
    sec = sec + bell_duration;
    relayOff();
 }
 
 void printData(){
-      Serial.print("dayOfTheWeek");
-      Serial.print(dow);
-      Serial.println();
-      Serial.print(hour);    
-      Serial.print(":");
-      Serial.print(minute);
-      Serial.print(":");
-      Serial.print(sec);
-      Serial.print(" ");
-      Serial.println();
+   Serial.print("dayOfTheWeek  ");
+   Serial.print(daysOfWeek[dow]);
+   Serial.println();
+   Serial.print(hour);    
+   Serial.print(":");
+   Serial.print(minute);
+   Serial.print(":");
+   Serial.print(sec);
+   Serial.print(" ");
+   Serial.println();
+   String minuteS = "";
+   String secondS = "";
+   if(minute< 10){
+    minuteS = String(0)+ String(minute);
+   }else{
+    minuteS = String( minute);
+   }
+   if (sec<10){
+    secondS = String(0)+ String(sec);
+   }else {
+    secondS = String(sec);
+   }
+
+   
+  String date = (String(hour) +":" + minuteS + ":" + secondS+"    "+daysOfWeek[dow]);
+  lcd.clear();
+  lcd.setCursor(0, 0);              // Устанавливаем курсор в начало 1 строки
+  lcd.print(date);       // Выводим текст
+  lcd.setCursor(0, 1);              // Устанавливаем курсор в начало 2 строки
+  lcd.print(bellTime[bellIndex]);         // Выводим текст
 }
 
 void relayOn(){
