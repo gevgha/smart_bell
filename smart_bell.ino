@@ -15,19 +15,19 @@ void setup(){
     Serial.begin(9600);               // Инициализируем вывод данных на монитор серийного порта, со скоростью 9600 бод
     pinMode(relayPin, OUTPUT); 
     rtc.begin();
-  //  rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));                
+   // rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));                
 //  clock.setDateTime(2016, 9, 15, 0, 0, 0);              // Установка времени вручную (Год, Месяц, День, Час, Минута, Секунда)
 //  setAlarm1(Дата или день, Час, Минута, Секунда, Режим)
     readTime();
-    lcd.begin(16, 2);                  // Задаем размерность экрана
+   // lcd.begin(16, 2);                  // Задаем размерность экрана
 }
 
 void loop(){
   Reset();
   calculateTime();
   printData();                  
-  soundingBellTest();
-  soundingBell();                                              
+  //soundingBellTest();
+  soundingBell();                                           
 }
 
 void readTime(){
@@ -42,7 +42,7 @@ void readTime(){
 }
 
 void calculateTime(){
-    delay(1000);
+    delay(999);
     sec++;
     if (sec > 59){
        minute++;
@@ -57,88 +57,34 @@ void calculateTime(){
     }
 }
 
-void soundingBellTest(){   
-     if(hour == 18 && minute == 32  && sec==0){
-        relayStates();
-     } else if(hour == 18 && minute == 54 && sec == 0){ 
-        relayStates();
-     } else if(hour == 18 && minute == 59 && sec == 0){ 
-        relayStates();
-     } else if(hour == 18 && minute == 55 && sec == 0){ 
-        relayStates();
-     } else if(hour == 19 && minute == 10 && sec == 0){ 
-        relayStates();
-     }
-}
-
 void soundingBell(){
   if(dow!=6 || dow!=7){    
-     if(hour == 9){
-        if(hour == 9 && minute == 0 && sec==0){
-           relayStates();
-        } else if(hour == 9 && minute == 45 && sec == 0){ 
-           relayStates();
-        } else if(hour == 9 && minute == 50 && sec == 0){ 
-           relayStates();
-        }
-     }else if (hour == 10){
-        if(hour == 10 && minute == 35 && sec == 0){ 
-           relayStates();
-        }else if(hour == 10 && minute == 40 && sec == 0){
-           relayStates();
-        }
-     }else if (hour == 11){
-        if(hour == 11 && minute == 25 && sec == 0){
-           relayStates();
-        }else if(hour == 11 && minute == 35 && sec == 0){
-           relayStates();
-        }
-     }else if(hour == 12){
-        if(hour == 12 && minute == 20 && sec == 0){
-           relayStates();
-        }else if(hour == 12 && minute == 25 && sec == 0){
-           relayStates();
-        }
-     }else if(hour == 13){
-        if(hour == 13 && minute == 10 && sec == 0){
-          relayStates();
-        }else if(hour == 13 && minute == 15 && sec == 0){
-          relayStates();
-        }
-     }else if(hour == 14){
-         if(hour == 14 && minute == 00 && sec == 0){ 
-           relayStates();
-         }else if(hour == 14 && minute == 05 && sec == 0){
-           relayStates();
-         }else if(hour == 14 && minute == 50 && sec == 0){
-           relayStates();
-         }
-     }
+       if(hour == 9 && minute == 0 && sec==0){relayStates();}
+        if(hour == 9 && minute == 45 && sec == 0){relayStates();} 
+        if(hour == 9 && minute == 50 && sec == 0){relayStates();} 
+        if(hour == 10 && minute == 35 && sec == 0){relayStates();}
+        if(hour == 10 && minute == 40 && sec == 0){relayStates();}
+        if(hour == 11 && minute == 25 && sec == 0){relayStates();}
+        if(hour == 11 && minute == 35 && sec == 0){ relayStates();}
+        if(hour == 12 && minute == 20 && sec == 0){relayStates();} 
+        if(hour == 12 && minute == 25 && sec == 0){relayStates();}
+        if(hour == 13 && minute == 10 && sec == 0){relayStates();}
+        if(hour == 13 && minute == 15 && sec == 0){relayStates();}
+        if(hour == 14 && minute == 00 && sec == 0){ relayStates();}
+        if(hour == 14 && minute == 05 && sec == 0){relayStates();}
+        if(hour == 14 && minute == 50 && sec == 0){relayStates();}
   }
+   if(minute == 0&& sec == 0){ relayStates();}
 }
 
 void relayStates(){
    relayOn();
-   bellIndex = bellIndex + 1;
-   if(bellIndex == sizeof(bellTime)){
-      bellIndex = 0;
-   }
    delay((bell_duration * 1000));   //թիվը վերածում է վրկ․
    sec = sec + bell_duration;
    relayOff();
 }
 
 void printData(){
-   Serial.print("dayOfTheWeek  ");
-   Serial.print(daysOfWeek[dow]);
-   Serial.println();
-   Serial.print(hour);    
-   Serial.print(":");
-   Serial.print(minute);
-   Serial.print(":");
-   Serial.print(sec);
-   Serial.print(" ");
-   Serial.println();
    String minuteS = "";
    String secondS = "";
    if(minute< 10){
@@ -154,11 +100,12 @@ void printData(){
 
    
   String date = (String(hour) +":" + minuteS + ":" + secondS+"    "+daysOfWeek[dow]);
-  lcd.clear();
-  lcd.setCursor(0, 0);              // Устанавливаем курсор в начало 1 строки
-  lcd.print(date);       // Выводим текст
-  lcd.setCursor(0, 1);              // Устанавливаем курсор в начало 2 строки
-  lcd.print(bellTime[bellIndex]);         // Выводим текст
+  Serial.println(date);
+ // lcd.clear();
+ // lcd.setCursor(0, 0);              // Устанавливаем курсор в начало 1 строки
+ // lcd.print(date);       // Выводим текст
+ // lcd.setCursor(0, 1);              // Устанавливаем курсор в начало 2 строки
+ // lcd.print(bellTime[bellIndex]);         // Выводим текст
 }
 
 void relayOn(){
@@ -170,7 +117,7 @@ void relayOff(){
 }
 
 inline void Reset() {
-  if(hour==8 && minute==30 && sec==0){
+  if(hour == 8 && minute == 30 && sec == 0){
     delay(50000); 
     asm("JMP 0");
   }
