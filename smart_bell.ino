@@ -13,7 +13,7 @@ byte bellIndex = 0;
 RTC_DS3231 rtc;
 byte bell_duration = 8;
 byte  dow , hourR , minuteR, sec;
-byte compileSecond = 10;
+byte compileSecond = 15;
 
 
 void setup(){
@@ -26,7 +26,6 @@ void setup(){
 //  setAlarm1(Дата или день, Час, Минута, Секунда, Режим)
     readTime();
    // lcd.begin(16, 2);                  // Задаем размерность экрана
-   
 }
 
 void loop(){
@@ -49,7 +48,7 @@ void readTime(){
 }
 
 void calculateTime(){
-    delay(999);
+    delay(995);
     sec++;
     if (sec > 59){
        minuteR++;
@@ -65,105 +64,26 @@ void calculateTime(){
 }
 
 void soundingBell(){
-      //9։00
-      setTime(9,0,0,1,1,1970); 
-  if(dow!=0 && dow!=6){    }
-  
-       //Առաջին դասի սկիզբ 9։00
-       if(hourR == hour() && minuteR == minute() && sec == second()){relayStates();}
-       printDigitalClockDisplay(); 
+       //9։00
+       setTime(9,0,0,1,1,1970); 
+       if(dow!=0 && dow!=6){    }
+      
+       for(int i = 0; i <  sizeof(lessonsDuration)/2; i++){
+         if(hourR == hour() && minuteR == minute() && sec == second()){relayStates();}
+         changeTime(lessonsDuration[i]);
+         if(i < sizeof(rests)/2){
+           if(hourR == hour() && minuteR == minute() && sec == second()){relayStates();}
+            changeTime(rests[i]);
+         }
+       }
        
-       //Սահմանել առաջին դասի ավարտը 9։0 + 45
-       setTime(hour(), minute()+ lessonsDuration[0] ,0,1,1,1970); 
-       if(hourR == hour() && minuteR == minute() && sec == second()){relayStates();}
-       printDigitalClockDisplay();
-       
-       // 9 ։ 45 + 5
-       setTime(hour(), minute()+ rests[0] ,0,1,1,1970); 
-       //Երկրորդ դասի սկիզբ 9 ։ 50
-       if(hourR == hour() && minuteR == minute() && sec == second()){relayStates();}
-       printDigitalClockDisplay();
-       
-        //9 ։ 50 + 45
-        setTime(hour(), minute()+ lessonsDuration[1] ,0,1,1,1970); 
-        //Երկրորդ դասի ավարտ 10 ։ 35 
-        if(hourR == hour() && minuteR == minute() && sec == second()){relayStates();}
-        printDigitalClockDisplay();
+       if(minuteR == 0 && sec == 0){relayStates();}
+       if(minuteR == 30 && sec == 0){relayStates();}
+}
 
-        //10 ։ 35 + 5
-        setTime(hour(), minute()+ rests[1] ,0,1,1,1970); 
-        //Երրորդ դասի սկիզբ 10 ։ 40 
-        if(hourR == hour() && minuteR == minute() && sec == second()){relayStates();}
-        printDigitalClockDisplay();
-
-        
-        //10 ։ 40+ 45
-        setTime(hour(), minute()+ lessonsDuration[2] ,0,1,1,1970); 
-        //Երրորդ դասի ավարտ 11 ։ 25 
-        if(hourR == hour() && minuteR == minute() && sec == second()){relayStates();}
-        printDigitalClockDisplay();
-
-        //11:25+ 5
-        setTime(hour(), minute()+ rests[2] ,0,1,1,1970); 
-        //չորորդ դասի սկիզբ 
-        if(hourR == hour() && minuteR == minute() && sec == second()){relayStates();}
-        printDigitalClockDisplay();
-
-
-        //11։30 + 45
-        setTime(hour(), minute()+ lessonsDuration[3] ,0,1,1,1970);
-        //չորորդ դասի ավարտ 12։15
-        if(hourR == hour() && minuteR == minute() && sec == second()){relayStates();}
-        printDigitalClockDisplay();
-
-
-        //12։15 + 5
-        setTime(hour(), minute()+ rests[3] ,0,1,1,1970); 
-        //հինգերորդ դասի սկիզբ 12։20
-        if(hourR == hour() && minuteR == minute() && sec == second()){relayStates();}
-        printDigitalClockDisplay();
-
-
-        //12։20 + 45
-        setTime(hour(), minute()+ lessonsDuration[4] ,0,1,1,1970);
-        //հինգերորդ դասի ավարտ 13։05
-        if(hourR == hour() && minuteR == minute() && sec == second()){relayStates();}
-        printDigitalClockDisplay();
-
-
-        //13։05 + 5
-        setTime(hour(), minute()+ rests[4] ,0,1,1,1970); 
-        //վեցերորդ դասի սկիզբ 13։10
-        if(hourR == hour() && minuteR == minute() && sec == second()){relayStates();}
-        printDigitalClockDisplay();
-
-
-        //13։10 + 45
-        setTime(hour(), minute()+ lessonsDuration[5] ,0,1,1,1970);
-        //վեցերորդ դասի ավարտ 13։55
-        if(hourR == hour() && minuteR == minute() && sec == second()){relayStates();}
-        printDigitalClockDisplay();
-
-
-        //13։55 + 5
-        setTime(hour(), minute()+ rests[5] ,0,1,1,1970); 
-        //յոթերորդ դասի սկիզբ 14։00
-        if(hourR == hour() && minuteR == minute() && sec == second()){relayStates();}
-        printDigitalClockDisplay();
-
-
-        //14։00 + 45
-        setTime(hour(), minute()+ lessonsDuration[6] ,0,1,1,1970);
-        //յոթերորդ դասի ավարտ 14։45
-        if(hourR == hour() && minuteR == minute() && sec == second()){relayStates();}
-        printDigitalClockDisplay();
-
-        
-               
-
-  
-   if(minuteR == 0 && sec == 0){relayStates();}
-   while(true){}
+void changeTime(int min){
+ setTime(hour(), minute()+ min ,0,1,1,1970);
+ // printDigitalClockDisplay();
 }
 
 void relayStates(){
