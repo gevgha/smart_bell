@@ -41,7 +41,11 @@ void loop() {
 
   buttonState = digitalRead(buttonPin);
   if (buttonState == LOW) {
-    counter++;
+     counter++;
+    delay(350);
+  }
+  if (counter >3) {
+     counter = 1;
   }
   if (counter == 1) {
     ledEnabled(R);
@@ -54,10 +58,6 @@ void loop() {
   if (counter == 3) {
     ledEnabled(B);
     soundingBellModeB();
-  }
-
-  if (counter >3) {
-    counter = 1;
   }
 }
 
