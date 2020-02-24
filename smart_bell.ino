@@ -1,7 +1,7 @@
 #include <EEPROM.h>
 #include <Wire.h>
 #include "RTClib.h"
-#define relayPin 6            // Ռելեյի պինը
+#define relayPin 4            // Ռելեյի պինը
 String daysOfWeek [] = {"Sun.", "Mon.", "Tue.", "Wed.", "Thu.", "Fri.", "Sat.",};
 String bellTime [] = {"9:00", "9:45", "9:50", "10:35", "10:40", "11:25", "11:35", "12:20", "12:25", "13:10", "13:15", "14:00", "14:05", "14:50"};
 byte bellIndex = 0;
@@ -10,15 +10,14 @@ byte bell_duration = 5;
 byte  dow , hour , minute, sec;
 byte compileSecond = 7;
 int buttonPin = 2;
-int R = 12;
-int VIN = 11;
-int G = 10;
-int B = 9;
+int R = 11;
+int VIN = 10;
+int G = 9;
+int B = 8;
 byte counter = 1;
 int buttonState;
 int address = 0;
  
-
 void setup() {
   Serial.begin(9600);  // Инициализируем вывод данных на монитор серийного порта, со скоростью 9600 бод
   pinMode(buttonPin, INPUT);
@@ -45,11 +44,13 @@ void loop() {
   buttonState = digitalRead(buttonPin);
   if (buttonState == LOW) {
      counter++;
-    delay(350);
-    EEPROM.write(address, counter);
+     delay(350);
+     EEPROM.write(address, counter);
   }
+
+  
   if (counter >3) {
-     counter = 1;
+    counter = 1;
   }
   if (counter == 1) {
     ledEnabled(R);
@@ -63,6 +64,7 @@ void loop() {
     ledEnabled(B);
     soundingBellModeB();
   }
+
 }
 
 void readTime() {
@@ -86,19 +88,19 @@ void readTime() {
 
 void ledEnabled(int ledColor) {
   switch (ledColor) {
-    case 12:
+    case 11:
       digitalWrite(VIN, HIGH);
       digitalWrite(R, LOW);
       digitalWrite(G, HIGH);
       digitalWrite(B, HIGH);
       break;
-    case 10:
+    case 9:
       digitalWrite(VIN, HIGH);
       digitalWrite(R, HIGH);
       digitalWrite(G, LOW);
       digitalWrite(B, HIGH);
       break;
-    case 9:
+    case 8:
       digitalWrite(VIN, HIGH);
       digitalWrite(R, HIGH);
       digitalWrite(G, HIGH);
@@ -171,16 +173,16 @@ void soundingBellModeB(){
         if(hour == 9 && minute == 45 && sec == 0){relayStates();} 
         if(hour == 9 && minute == 50 && sec == 0){relayStates();} 
         if(hour == 10 && minute == 35 && sec == 0){relayStates();}
-        if(hour == 10 && minute == 40 && sec == 0){relayStates();}
-        if(hour == 11 && minute == 25 && sec == 0){relayStates();}
-        if(hour == 11 && minute == 40 && sec == 0){ relayStates();}
-        if(hour == 12 && minute == 25 && sec == 0){relayStates();} 
-        if(hour == 12 && minute == 30 && sec == 0){relayStates();}
-        if(hour == 13 && minute == 15 && sec == 0){relayStates();}
+        if(hour == 10 && minute == 55 && sec == 0){relayStates();}
+        if(hour == 11 && minute == 40 && sec == 0){relayStates();}
+        if(hour == 11 && minute == 45 && sec == 0){ relayStates();}
+        if(hour == 12 && minute == 30 && sec == 0){relayStates();} 
+        if(hour == 12 && minute == 35 && sec == 0){relayStates();}
         if(hour == 13 && minute == 20 && sec == 0){relayStates();}
-        if(hour == 14 && minute == 5 && sec == 0){ relayStates();}
-        if(hour == 14 && minute == 10 && sec == 0){relayStates();}
-        if(hour == 14 && minute == 55 && sec == 0){relayStates();}
+        if(hour == 13 && minute == 25 && sec == 0){relayStates();}
+        if(hour == 14 && minute == 10 && sec == 0){ relayStates();}
+        if(hour == 14 && minute == 15 && sec == 0){relayStates();}
+        if(hour == 15 && minute == 0 && sec == 0){relayStates();}
     }
 }
 
