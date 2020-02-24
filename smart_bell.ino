@@ -1,3 +1,4 @@
+#include <EEPROM.h>
 #include <Wire.h>
 #include "RTClib.h"
 #define relayPin 6            // Ռելեյի պինը
@@ -13,8 +14,10 @@ int R = 12;
 int VIN = 11;
 int G = 10;
 int B = 9;
-int counter = 1;
+byte counter = 1;
 int buttonState;
+int address = 0;
+ 
 
 void setup() {
   Serial.begin(9600);  // Инициализируем вывод данных на монитор серийного порта, со скоростью 9600 бод
@@ -30,7 +33,7 @@ void setup() {
   //  clock.setDateTime(2016, 9, 15, 0, 0, 0);              // Установка времени вручную (Год, Месяц, День, Час, Минута, Секунда)
   //  setAlarm1(Дата или день, Час, Минута, Секунда, Режим)
   readTime();
-  relayStates();
+  counter = EEPROM.read(address);
 }
 
 void loop() {
@@ -43,6 +46,7 @@ void loop() {
   if (buttonState == LOW) {
      counter++;
     delay(350);
+    EEPROM.write(address, counter);
   }
   if (counter >3) {
      counter = 1;
